@@ -494,6 +494,7 @@ module Databasedotcom
       if attrs.is_a?(Hash)
         coerced_attrs = {}
         attrs.keys.each do |key|
+          next if attrs[key].nil?
           case clazz.field_type(key)
             when "multipicklist"
               coerced_attrs[key] = (attrs[key] || []).join(';')
