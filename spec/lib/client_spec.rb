@@ -456,6 +456,44 @@ describe Databasedotcom::Client do
       end
     end
 
+    describe "using multiple client instances" do
+      before do
+        @other_client = Databasedotcom::Client.new
+
+        @client.stub(:describe_sobject).and_return({"fields" => [], "bar" => "baz"})
+        @other_client.stub(:describe_sobject).and_return({"fields" => [], "bang" => "bangz"})
+
+        His = Module.new
+        Her = Module.new
+      end
+
+      after do
+        Object.send(:remove_const, "HotDog") if Object.const_defined?("HotDog")
+        Object.send(:remove_const, "Burger") if Object.const_defined?("Burger")
+        Object.send(:remove_const, "His") if Object.const_defined?("His")
+        Object.send(:remove_const, "Her") if Object.const_defined?("Her")
+      end
+
+      it "can materialize multiple classes with distinct clients" do
+        @client.materialize("HotDog")
+        @other_client.materialize("Burger")
+
+        HotDog.client.should == @client
+        Burger.client.should == @other_client
+      end
+
+      it "can materialize the same class in different namespaces with distinct clients" do
+        @client.sobject_module = His
+        @client.materialize("HotDog")
+
+        @other_client.sobject_module = Her
+        @other_client.materialize("HotDog")
+
+        His::HotDog.client.should == @client
+        Her::HotDog.client.should == @other_client
+      end
+    end
+
     describe "#describe_sobject" do
       context "with a known sobject type" do
         before do
