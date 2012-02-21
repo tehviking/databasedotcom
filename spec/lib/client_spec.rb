@@ -492,6 +492,13 @@ describe Databasedotcom::Client do
         His::HotDog.client.should == @client
         Her::HotDog.client.should == @other_client
       end
+
+      it "resets the client on a materialized class on subsequent attempts to materialize the class" do
+        @client.materialize("HotDog")
+        @other_client.materialize("HotDog")
+
+        HotDog.client.should == @other_client
+      end
     end
 
     describe "#describe_sobject" do

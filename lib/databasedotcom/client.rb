@@ -163,7 +163,9 @@ module Databasedotcom
           new_class.materialize(original_classname)
           new_class
         else
-          module_namespace.const_get(clazz)
+          existing_class = module_namespace.const_get(clazz)
+          existing_class.client = self if existing_class.ancestors.include?(Databasedotcom::Sobject::Sobject)
+          existing_class
         end
       end
 
