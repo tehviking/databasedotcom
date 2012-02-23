@@ -179,7 +179,7 @@ module Databasedotcom
         self.cattr_accessor :sobject_name
 
         self.sobject_name = sobject_name
-        self.description = self.client.describe_sobject(self.sobject_name)
+        self.description = self.client.describe_sobject(self.sobject_name) || {'fields' => []}
         self.type_map = {}
 
         self.description["fields"].each do |field|

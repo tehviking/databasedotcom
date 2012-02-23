@@ -21,6 +21,11 @@ describe Databasedotcom::Sobject::Sobject do
         TestClass.materialize("TestClass")
       end
 
+      it "fails gracefully with an empty description of the class" do
+        @client.should_receive(:describe_sobject).with("TestClass").and_return(nil)
+        lambda { TestClass.materialize("TestClass") }.should_not raise_error
+      end
+
       context "with a response" do
         before do
           @client.stub(:describe_sobject).and_return(response)
@@ -49,6 +54,19 @@ describe Databasedotcom::Sobject::Sobject do
             it "sets #{f['name']} to #{f['defaultValueFormula'] ? f['defaultValueFormula'] : 'nil'}" do
               @sobject.send(f["name"].to_sym).should == f["defaultValueFormula"]
             end
+          end
+        end
+      end
+
+      context "with an empty response" do
+        before do
+          @client.stub(:describe_sobject).and_return(nil)
+          TestClass.materialize("TestClass")
+        end
+
+        describe ".attributes" do
+          it "returns an empty array" do
+            TestClass.attributes.should == []
           end
         end
       end
