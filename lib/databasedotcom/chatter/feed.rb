@@ -52,6 +52,12 @@ module Databasedotcom
         Databasedotcom::Chatter::FeedItem.new(client, response.body)
       end
 
+      def self.post_to_group(client, group_id, parameters)
+        url = "/services/data/v#{client.version}/chatter/feeds/record/#{group_id}/feed-items"
+        response = client.http_post(url, nil, parameters)
+        Databasedotcom::Chatter::FeedItem.new(client, response.body)
+      end
+
       private
 
       def self.feed_type
